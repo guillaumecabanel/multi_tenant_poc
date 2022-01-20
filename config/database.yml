@@ -25,18 +25,10 @@ development:
   tenant_one:
     <<: *default
     database: tenant_one
-  tenant_one_replica:
-    <<: *default
-    database: tenant_one
-    replica: true
 
   tenant_two:
     <<: *default
     database: tenant_two
-  tenant_two_replica:
-    <<: *default
-    database: tenant_two
-    replica: true
 
 
 
