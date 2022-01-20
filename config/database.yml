@@ -22,15 +22,13 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
-  tenant_one:
+  tenant_one_db:
     <<: *default
     database: tenant_one
 
-  tenant_two:
+  tenant_two_db:
     <<: *default
     database: tenant_two
-
-
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
