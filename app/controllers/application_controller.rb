@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   private
 
   def current_tenant
-    @current_tenant ||= Tenant.find_by_host(request.host)
+    @current_tenant ||= Tenant.find_by_host(request.host) || Tenant.first
   end
 
   ##
