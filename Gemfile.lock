@@ -137,9 +137,6 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.4.2)
       loofah (~> 2.3)
-    rails_multisite (4.0.1)
-      activerecord (> 5.0, < 7.1)
-      railties (> 5.0, < 7.1)
     railties (6.1.4.4)
       actionpack (= 6.1.4.4)
       activesupport (= 6.1.4.4)
@@ -217,7 +214,6 @@ DEPENDENCIES
   puma (~> 5.0)
   rack-mini-profiler (~> 2.0)
   rails (~> 6.1.4)
-  rails_multisite
   sass-rails (>= 6)
   selenium-webdriver
   spring
