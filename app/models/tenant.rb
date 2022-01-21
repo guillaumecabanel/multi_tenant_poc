@@ -1,9 +1,11 @@
 class Tenant
   @all = []
   @by_hosts = {}
+  @hooks ||= []
+  @loaded = false
 
   class << self
-    attr_reader :all, :by_hosts
+    attr_reader :all
 
     def register(tenant)
       all << tenant
@@ -29,6 +31,42 @@ class Tenant
     def find_by_host(host)
       by_hosts[host]
     end
+
+    def on_load(&block)
+      return block.call if loaded?
+
+      hooks << block
+    end
+
+    def loaded!
+      hooks.each(&:call)
+
+      self.loaded = true
+    end
+
+    private
+
+    attr_reader :by_hosts, :hooks
+
+    attr_writer :loaded
+
+    def loaded?
+      @loaded
+    end
+
+    def load_tenants!
+      database_config = YAML.load(ERB.new(File.read(Rails.root.join("config", "database.yml"))).result)
+
+      database_config[Rails.env].each do |name, tenant_config|
+        Tenant.new(
+          name: name,
+          hosts: tenant_config["tenant_hosts"],
+          db_url: tenant_config["url"]
+        )
+      end
+
+      loaded!
+    end
   end
 
   attr_reader :name, :hosts, :db_url
@@ -50,4 +88,6 @@ class Tenant
       yield
     end
   end
+
+  load_tenants!
 end
