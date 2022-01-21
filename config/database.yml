@@ -22,13 +22,11 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
-  tenant_one_db:
-    <<: *default
-    database: tenant_one
-
-  tenant_two_db:
-    <<: *default
-    database: tenant_two
+  <% Tenant.all.each do |tenant| %>
+    <%= tenant.db_name %>:
+      <<: *default
+      database: <%= tenant.name %>
+  <% end %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -85,7 +83,8 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  database: multi_tenant_poc_production
-  username: multi_tenant_poc
-  password: <%= ENV['MULTI_TENANT_POC_DATABASE_PASSWORD'] %>
+  <% Tenant.all.each do |tenant| %>
+    <%= tenant.db_name %>:
+      <<: *default
+      url: <%= tenant.db_url %>
+  <% end %>

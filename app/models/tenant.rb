@@ -31,12 +31,13 @@ class Tenant
     end
   end
 
-  attr_reader :name, :hosts
+  attr_reader :name, :hosts, :db_url
 
-  def initialize(name:, hosts:)
+  def initialize(name:, hosts:, db_url:)
     @name  = name
     @hosts = Array.wrap(hosts)
     @db_name = db_name.to_sym
+    @db_url = db_url
     self.class.register(self)
   end
 
@@ -55,5 +56,12 @@ class Tenant
   end
 end
 
-Tenant.new(name: :tenant_one, hosts: ["localhost"])
-Tenant.new(name: :tenant_two, hosts: "127.0.0.1")
+ENV.keys.select { |key| key.start_with? "TENANT_HOST_" }.each do |key|
+  tenant_constant_name = key.delete_prefix("TENANT_HOST_")
+
+  Tenant.new(
+    name: tenant_constant_name.downcase.to_sym,
+    hosts: ENV[key],
+    db_url: ENV["TENANT_DB_URI_#{tenant_constant_name}"]
+  )
+end
