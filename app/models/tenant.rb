@@ -5,6 +5,12 @@ class Tenant
   @loaded = false
 
   class << self
+    class TenantNotFound < ActiveRecord::RecordNotFound; end;
+
+    include Enumerable
+
+    delegate :each, to: :all
+
     attr_reader :all
 
     def register(tenant)
