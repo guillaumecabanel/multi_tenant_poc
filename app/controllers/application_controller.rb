@@ -1,11 +1,7 @@
 class ApplicationController < ActionController::Base
+  include SetCurrentTenant
+
   around_action :shard_swapping
-
-  private
-
-  def current_tenant
-    @current_tenant ||= Tenant.find_by_host(request.host) || Tenant.first
-  end
 
   ##
   # Needed for Rails 6.1, if you have Rails 7+, see https://edgeguides.rubyonrails.org/active_record_multiple_databases.html#activating-automatic-shard-switching
@@ -18,6 +14,6 @@ class ApplicationController < ActionController::Base
   # Note:
   # The argument forwarding operator (`...`) needs ruby 2.7+
   def shard_swapping(...)
-    current_tenant.connection(...)
+    Current.tenant.connection(...)
   end
 end

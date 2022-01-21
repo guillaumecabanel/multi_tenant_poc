@@ -1,0 +1,4 @@
+# update_auto_update_field_entries_job:
+#   cron: '1 0 0 * * *'
+#   class: '::Entries::UpdateAutoUpdateFieldEntriesJob'
+#   args: ['everyday']

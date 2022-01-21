@@ -25,6 +25,11 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+
+        if @post.content == "hello"
+          AutoReplyJob.perform_later
+        end
+
         format.html { redirect_to post_url(@post), notice: "Post was successfully created." }
         format.json { render :show, status: :created, location: @post }
       else

@@ -1,12 +1,13 @@
 class Tenant
+  class TenantNotFound < ActiveRecord::RecordNotFound; end;
+
   @all = []
   @by_hosts = {}
+  @by_names = {}.with_indifferent_access
   @hooks ||= []
   @loaded = false
 
   class << self
-    class TenantNotFound < ActiveRecord::RecordNotFound; end;
-
     include Enumerable
 
     delegate :each, to: :all
@@ -15,6 +16,9 @@ class Tenant
 
     def register(tenant)
       all << tenant
+
+      by_names[tenant.name] = tenant
+
       tenant.hosts.each do |host|
         by_hosts[host] = tenant
       end
@@ -35,9 +39,15 @@ class Tenant
     end
 
     def find_by_host(host)
-      by_hosts[host]
+      by_hosts[host] || raise(TenantNotFound, "Tenant not found for #{host}")
     end
 
+    def find_by_name(name)
+      by_names[name] || raise(TenantNotFound, "Tenant not found for #{name}")
+    end
+
+    ##
+    # Register hooks if class is not yet loaded.
     def on_load(&block)
       return block.call if loaded?
 
@@ -50,9 +60,20 @@ class Tenant
       self.loaded = true
     end
 
+    ##
+    # Temporary set the Current.tenant to each tenant
+    # to perform jobs with the correct tenant.
+    def each_connection(&block)
+      each do |tenant|
+        Current.set(tenant: tenant) do
+          tenant.connection(&block)
+        end
+      end
+    end
+
     private
 
-    attr_reader :by_hosts, :hooks
+    attr_reader :by_hosts, :by_names, :hooks
 
     attr_writer :loaded
 
@@ -70,6 +91,9 @@ class Tenant
           db_url: tenant_config["url"]
         )
       end
+
+      # We need to have an explicit tenant before performing ActiveRecord actions.
+      ActiveRecord::Base.default_shard = nil
 
       loaded!
     end
@@ -89,6 +113,8 @@ class Tenant
     "#{name}_shard".to_sym
   end
 
+  ##
+  # https://api.rubyonrails.org/classes/ActiveRecord/ConnectionHandling.html#method-i-connected_to
   def connection
     ActiveRecord::Base.connected_to(role: :writing, shard: shard_name) do
       yield
