@@ -47,7 +47,7 @@ class Tenant
     end
 
     ##
-    # Register hooks if class is not yet loaded, for it to be called when tenants are loaded (see `::loaded!`).
+    # Register hooks if class is not yet loaded, for them to be called when tenants are loaded (see `::loaded!`).
     def on_load(&block)
       return block.call if loaded?
 
