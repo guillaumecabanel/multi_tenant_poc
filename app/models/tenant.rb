@@ -71,8 +71,8 @@ class Tenant
       end
     end
 
-    def hosts
-      all.flat_map(&:hosts)
+    def known_host?(host)
+      by_hosts.has_key? host
     end
 
     private
