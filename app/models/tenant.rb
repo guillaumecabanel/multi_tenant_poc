@@ -71,6 +71,10 @@ class Tenant
       end
     end
 
+    def hosts
+      all.flat_map(&:hosts)
+    end
+
     private
 
     attr_reader :by_hosts, :by_names, :hooks
@@ -117,7 +121,7 @@ class Tenant
   # https://api.rubyonrails.org/classes/ActiveRecord/ConnectionHandling.html#method-i-connected_to
   def connection
     ActiveRecord::Base.connected_to(role: :writing, shard: shard_name) do
-      Current.set(tenant: tenant) do
+      Current.set(tenant: self) do
         yield
       end
     end
