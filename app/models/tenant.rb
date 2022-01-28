@@ -126,7 +126,8 @@ class Tenant
   def set_as_default_connection!
     Current.tenant = self
     ActiveRecord::Base.default_shard = shard_name
-    puts "connected to `#{Current.tenant.name}`"
+
+    Rails.logger.info "Connected to `#{Current.tenant.name}`!"
   end
 
   load_tenants!
