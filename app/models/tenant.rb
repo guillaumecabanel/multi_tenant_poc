@@ -117,8 +117,16 @@ class Tenant
   # https://api.rubyonrails.org/classes/ActiveRecord/ConnectionHandling.html#method-i-connected_to
   def connection
     ActiveRecord::Base.connected_to(role: :writing, shard: shard_name) do
-      yield
+      Current.set(tenant: tenant) do
+        yield
+      end
     end
+  end
+
+  def set_as_default_connection!
+    Current.tenant = self
+    ActiveRecord::Base.default_shard = shard_name
+    puts "connected to `#{Current.tenant.name}`"
   end
 
   load_tenants!
