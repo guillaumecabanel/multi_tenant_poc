@@ -47,7 +47,7 @@ class Tenant
     end
 
     ##
-    # Register hooks if class is not yet loaded.
+    # Register hooks if class is not yet loaded, for it to be called when tenants are loaded (see `::loaded!`).
     def on_load(&block)
       return block.call if loaded?
 
@@ -62,7 +62,7 @@ class Tenant
 
     ##
     # Temporary set the Current.tenant to each tenant
-    # to perform jobs with the correct tenant.
+    # to perform jobs with the correct tenant, for example.
     def each_connection(&block)
       each do |tenant|
         Current.set(tenant: tenant) do
