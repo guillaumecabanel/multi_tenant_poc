@@ -19,6 +19,8 @@ gem 'sidekiq-scheduler'
 
 gem 'bootsnap', '>= 1.4.4', require: false
 
+gem "paint"
+
 group :development, :test do
 end
 

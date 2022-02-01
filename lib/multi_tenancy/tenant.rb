@@ -127,11 +127,18 @@ class Tenant
     end
   end
 
-  def set_as_default_connection!
+  def connect!
     Current.tenant = self
-    ActiveRecord::Base.default_shard = shard_name
+    ActiveRecord::Base.connection_handler.establish_connection(database_configuration)
+    Rails.logger.info(Paint["\n\tConnected to #{ansi_colored_name}\n", nil, :bright])
+  end
 
-    Rails.logger.info "Connected to `#{Current.tenant.name}`!"
+  def database_configuration
+    ActiveRecord::Base.configurations.configs_for(name: name.to_s).configuration_hash
+  end
+
+  def ansi_colored_name(opt = nil)
+    Paint[name, :red, opt]
   end
 
   load_tenants!
