@@ -34,10 +34,13 @@ end
 ```
 
 ```ruby
-# config/initializers/multi_tenancy.rb
+# should be prefixed with 0 to make sure the initializer is the first executed
+# (to prevent unwanted connections in later initializers)
+# config/initializers/0_multi_tenancy.rb
 
 Rails.logger.formatter = MultiTenancy::LogFormatter.new
 ActionCable::Server::Base.prepend MultiTenancy::ActionCableServer
+ActiveRecord::Base.singleton_class.prepend MultiTenancy::ActiveRecordConnection
 ```
 
 ```ruby

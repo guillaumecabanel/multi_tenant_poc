@@ -1,5 +1,6 @@
 class Tenant
-  class TenantNotFound < ActiveRecord::RecordNotFound; end;
+  TenantNotFound = Class.new StandardError
+  TenantMustBeSet = Class.new StandardError
 
   @all = []
   @by_hosts = {}
@@ -35,7 +36,6 @@ class Tenant
     def connection_settings
       # We need to have an explicit tenant before performing ActiveRecord actions.
       ActiveRecord::Base.default_shard = nil
-
       all.each_with_object({}) do |tenant, connections|
         connections[tenant.shard_name] = { writing: tenant.name }
       end

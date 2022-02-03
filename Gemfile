@@ -30,7 +30,7 @@ group :development do
   gem 'listen', '~> 3.3'
   gem 'spring'
   gem 'pry-rails'
-  gem 'pry-byebug'
+  gem 'pry-byebug', "~> 3.9"
   gem 'pry-doc'
 end
 

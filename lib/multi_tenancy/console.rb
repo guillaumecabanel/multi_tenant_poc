@@ -1,7 +1,5 @@
 module MultiTenancy
   module Console
-    TenantMustBeSet = Class.new StandardError
-
     class << self
       def ask_for_tenant(can_skip: false)
         return if default_tenant
