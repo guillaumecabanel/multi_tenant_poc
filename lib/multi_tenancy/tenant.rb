@@ -33,6 +33,9 @@ class Tenant
     #   tenant_two: { writing: :tenant_two_db }
     # }
     def connection_settings
+      # We need to have an explicit tenant before performing ActiveRecord actions.
+      ActiveRecord::Base.default_shard = nil
+
       all.each_with_object({}) do |tenant, connections|
         connections[tenant.shard_name] = { writing: tenant.name }
       end
@@ -95,9 +98,6 @@ class Tenant
           db_url: tenant_config["url"]
         )
       end
-
-      # We need to have an explicit tenant before performing ActiveRecord actions.
-      ActiveRecord::Base.default_shard = nil
 
       loaded!
     end
